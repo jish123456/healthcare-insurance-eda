@@ -1,0 +1,50 @@
+---
+title: "healthcare"
+author:"Jishi"
+format: html
+editor: visual
+---
+
+## Loading in the Data
+
+```{r}
+library(tidyverse)
+data <- read.csv("insurance.csv")
+head(data)
+
+
+```
+
+Dimensions of the dataset
+
+```{r}
+dim(data)
+```
+
+The data set has 1338 rows and 7 different variables
+
+Analysis
+
+```{r}
+# Look at the data types for each column
+str(data)
+
+# Get quick math summaries (min, max, mean) for numeric columns
+summary(data)
+
+```
+
+Univariate analysis
+
+```{r}
+# Univariate analysis of the target variable (charges)
+ggplot(data,aes(x = charges)) +
+  geom_histogram(fill = "seagreen", color = "black", bins = 40) +
+  labs(title = "Distribution of Medical Charges",
+       x = "Medical Charges ($)",
+       y = "Number of Patients") +
+  theme_minimal()
+
+```
+
+Its not normal Distrubuited and its skewed right w
