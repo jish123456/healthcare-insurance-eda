@@ -37,9 +37,9 @@ summary(data)
 Univariate analysis
 
 ```{r}
-# Univariate analysis of the target variable (charges)
+
 ggplot(data,aes(x = charges)) +
-  geom_histogram(fill = "seagreen", color = "black", bins = 40) +
+  geom_histogram(fill = "seagreen", color = "black", bins = 20) +
   labs(title = "Distribution of Medical Charges",
        x = "Medical Charges ($)",
        y = "Number of Patients") +
@@ -47,4 +47,205 @@ ggplot(data,aes(x = charges)) +
 
 ```
 
-Its not normal Distrubuited and its skewed right w
+Observation:
+
+Medical Chargers is not normal distrubted and it is right skewed we can see that the data has 3 different peaks one around 6 thousand, one around 20000 and one aroung 40000 and we can also see 2 distinct price ranges that contain outliers.
+
+Next we have the BMI
+
+```{r}
+ggplot(data,aes(x = bmi))+
+  geom_histogram(fill = "seagreen", color = "black", bins = 20) +
+labs(title = "Distribution of BMI",
+     x = "BMI",
+     y = "Number of Patients") +
+  theme_minimal()
+```
+
+For BMI we have Normal distrubutim for the Bmi data where we have the mean to be at aroung 30.66 nothing really special here.
+
+Next we have the age
+
+```{r}
+ggplot(data,aes(x = age))+
+  geom_histogram(fill = "seagreen", color = "black", bins = 20) +
+  labs(title = "Distribution of age",
+       x = "age",
+       y = "Number of Patients") +
+  theme_minimal()
+```
+
+We have a variety of ages in this data set and we can say this is uniform distrubution.
+
+Univariate analysis for categorical varibles
+
+```{r}
+# Univariate analysis for categorical/group variables
+
+# 1. Sex
+ggplot(data, aes(x = sex)) +
+  geom_bar(fill = "plum", color = "black") +
+  labs(title = "Count of Patients by Sex", x = "Sex", y = "Count") +
+  theme_minimal()
+
+# 2. Smoker
+ggplot(data, aes(x = smoker)) +
+  geom_bar(fill = "salmon", color = "black") +
+  labs(title = "Count of Smokers vs Non-Smokers", x = "Smoker Status", y = "Count") +
+  theme_minimal()
+
+# 3. Region
+ggplot(data, aes(x = region)) +
+  geom_bar(fill = "gold", color = "black") +
+  labs(title = "Count of Patients by Region", x = "Region", y = "Count") +
+  theme_minimal()
+
+# 4. Children
+ggplot(data, aes(x = as.factor(children))) +
+  geom_bar(fill = "lightgreen", color = "black") +
+  labs(title = "Count of Patients by Number of Children", x = "Number of Children", y = "Count") +
+  theme_minimal()
+```
+
+**Observation:**
+
+The dataset is perfectly balanced across `sex` and `region`, with nearly identical counts in each group. However, the data is heavily unbalanced regarding `smoker` status (there are vastly more non-smokers) and `children` (the majority of patients have zero children).
+
+Bivariate analysis lets look at how medical charges agiansts all the other diffrent varibles because later on we are going to build a reggression model to predict the medical charges underdifrent circumstances.
+
+# 
+
+```{r}
+ggplot(data, aes(x = age, y = charges, color = smoker)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Impact of Age on Medical Charges by Smoker Status",
+       x = "Age",
+       y = "Medical Charges ($)") +
+  theme_minimal()
+```
+
+Observation:
+
+In this scatterplot we see a clear positive associton between age and medical charges, which means that the costs are rising as age is going regardless if the patient is a smoker or not.
+
+We also see that smoking at young age you incur around the same costs and being non smoker at the age of 68 or later one they incur the same medical costs.
+
+```{r}
+# Bivariate analysis: Age vs Charges, color-coded by Smoker
+ggplot(data, aes(x = bmi, y = charges, color = smoker)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Impact of bmi on Medical Charges by Smoker Status",
+       x = "bmi",
+       y = "Medical Charges ($)") +
+  theme_minimal()
+```
+
+The form is roughly linear for the and the data is stratfied into separate clusters of smoker and non - smoker.The direction is positive as BMI increases genrally medical costs are rising.Strength: The overall association is moderately strong, but this varies significantly by group. For non-smokers (red), the association is weak, as charges remain relatively flat and dense regardless of BMI. For smokers (teal), the association is moderately strong to strong, heavily driven by the sharp jump in costs once BMI exceeds 30.Outliers: Yes, there are a few apparent outliers. There are a handful of non-smokers (red points) with unusually high medical charges (reaching up to \$30,000+) compared to the rest of the non-smoking group. There is also a smoker (teal point) with an exceptionally high charge exceeding \$60,000 near a BMI of 32.
+
+```{r}
+
+
+ggplot(data, aes(x = region, y = charges, fill = region)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Distribution of Medical Charges by Region",
+       x = "Region",
+       y = "Medical Charges ($)") +
+  theme_minimal() +
+  theme(legend.position = "none") # Hides the redundant legend
+```
+
+We can see that geopgraphy is a weak predictor of our dependant varibles medical charges since all the medians all aroung the same but we see that southeast has the highest with thier 3rd quartile nehing the highest in medical chargers and they have the highest medicla charges interm of outliers
+
+```{r}
+ggplot (data, aes(x = children, y = charges))+
+  geom_point(alpha = 0.7)+
+  labs(title = "Impacts on medical charges with the amount of children",
+       x = "Children",
+       y = "Charges")+
+  theme_minimal()
+```
+
+This is pretty cool when we see inviduals who have more children on avrage have less medical charges. But we cant be for sure since not many people have zero children in the 5 children and 4 people column so a further analsis might be needed
+
+```{r}
+data%>%
+  group_by(children) %>%
+  summarize(
+    mean_charges = mean(charges),
+    median_charges = median(charges),
+    patient_count = n()
+  )
+```
+
+We can see that average charges don't actually drop right away. The mean steadily rises from 0 up to 3 children, and only drops at 4 and 5 children which is likely just because there are so few patients in those last two groups." So children idnt really a good predictor in for medical charges.
+
+Correlation matrix
+
+```{r}
+library(dplyr)
+library(ggcorrplot)
+
+# 1. Convert 'smoker' to 1 (yes) and 0 (no), and select the variables
+numeric_data <- data %>%
+  mutate(smoker_numeric = ifelse(smoker == "yes", 1, 0)) %>%
+  select(age, bmi, children, smoker_numeric, charges)
+
+# 2. Calculate the matrix
+cor_matrix <- cor(numeric_data)
+
+# 3. Plot the heatmap
+ggcorrplot(cor_matrix,
+           method = "square",
+           type = "upper", 
+           lab = TRUE,     
+           colors = c("blue", "white", "red"),
+           title = "Correlation Heatmap (Including Smoker Status)")
+
+```
+
+Trianing the model
+
+```{r}
+
+
+set.seed(123)
+sample_size <- floor(0.80 * nrow(data))
+
+train_indices <- sample(seq_len(nrow(data)), size = sample_size)
+
+
+train_set <- data[train_indices, ]
+test_set <- data[-train_indices,]
+
+
+insurance_model <- lm(charges ~ age + children +bmi * smoker, data = train_set)
+
+summary(insurance_model)
+```
+
+to see how accurate our model is lets precit using it
+
+```{r}
+# 1. Make predictions on the unseen test data
+# We add these predictions as a brand new column in the test_set
+test_set$predicted_charges <- predict(insurance_model, newdata = test_set)
+
+# 2. Calculate the Mean Absolute Error (MAE)
+# This calculates the average dollar amount the model's guess was off by
+mae <- mean(abs(test_set$charges - test_set$predicted_charges))
+print(paste("On average, the model's predictions are off by: $", round(mae, 2)))
+
+# 3. Visualize Actual vs. Predicted Charges
+library(ggplot2)
+
+ggplot(test_set, aes(x = charges, y = predicted_charges)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  # Adds a perfect prediction line (where actual exactly equals predicted)
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed", size = 1.2) +
+  labs(title = "Model Accuracy: Actual vs. Predicted Medical Charges",
+       x = "Actual Medical Charges ($)",
+       y = "Predicted Medical Charges ($)") +
+  theme_minimal()
+```
+
+when we test our data on the unseen data we get a mean absoulete error of \$2,688.95 when we visualze the actual data we see our model precdicts well for the data point less then 15000 and then it captures the high costs values with interactions with the smoker and BMI. Furthermore the model cant predict the mid ange of \$20000 to \$30000 This suggests that while age, BMI, and smoking status are the primary drivers of medical costs, additional unmeasured variables (such as specific medical diagnoses or hereditary conditions) are required to capture all variance perfectly."
