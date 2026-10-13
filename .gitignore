@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Quarto render output
+*.html
+*_files/
+/.quarto/
